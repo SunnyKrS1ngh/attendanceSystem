@@ -1,6 +1,12 @@
 import face_recognition
 import os
 import cv2
+import pandas as pd
+
+df = pd.read_excel('names.xlsx')
+
+for i in range(0,len(df)):
+  df['status'][i] = 'A'
 
 known_faces_dir = "known_faces"
 unknown_faces_dir = "unknown_faces"
@@ -37,6 +43,10 @@ for filename in os.listdir(unknown_faces_dir):
         Match = None
         if True in results:
             Match = known_names[results.index(True)]
+            for k in range(0,len(df)):
+                if(df['names'][k]==Match):
+                    df['status'][k]='P'
+                    
             print(f"Match found: {Match}")
 
             top_left = (face_location[3], face_location[0])
@@ -54,5 +64,6 @@ for filename in os.listdir(unknown_faces_dir):
     cv2.imshow(filename,image)
     cv2.waitKey(0)
     cv2.destroyWindow(filename)
-    
+print("Writing attendance to excel file...")
+df.to_excel('attendance.xlsx', index=False)
     
